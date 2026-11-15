@@ -63,13 +63,12 @@ function groupeInvitation() {
 }
 groupeInvitation();
 
-const DOMAINE_ID = "foot.synathletic.com";
-function idVersEmail(v, inverse) {
+async function emailDepuisIdentifiant(v) {
   v = String(v || "").trim();
   if (v.includes("@")) return v.toLowerCase();
-  let m = v.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
-  if (inverse) m = m.reverse();
-  return m.length ? m.join(".") + "@" + DOMAINE_ID : "";
+  if (v.length < 3) return "";
+  const { data } = await sb.rpc("email_par_identifiant", { ident: v });
+  return data || "";
 }
 function emailValide(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }
 
@@ -234,7 +233,7 @@ function ecranAuth(modeInitial = "connexion") {
       const email = form.querySelector("#email").value.trim();
       const mdp = form.querySelector("#mdp").value;
       const nom = mode === "inscription" ? form.querySelector("#nom").value.trim() : "";
-      if (!idVersEmail(email)) return afficherMessage("Entre ton nom et prénom.", "erreur");
+      if (email.length < 3) return afficherMessage("Entre ton nom et prénom.", "erreur");
       if (mdp.length < 8) return afficherMessage("Le mot de passe doit contenir au moins 8 caractères.", "erreur");
       if (mode === "inscription" && nom.length < 2) return afficherMessage("Entre ton nom et prénom.", "erreur");
       const bouton = form.querySelector(".btn[type=submit]");
@@ -248,11 +247,9 @@ function ecranAuth(modeInitial = "connexion") {
             mode = "connexion"; dessiner();
           }
         } else {
-          let { error } = await sb.auth.signInWithPassword({ email: idVersEmail(email), password: mdp });
-          if (error && !email.includes("@") && email.trim().split(/\s+/).length === 2) {
-            const r2 = await sb.auth.signInWithPassword({ email: idVersEmail(email, true), password: mdp });
-            if (!r2.error) error = null;
-          }
+          const mail = await emailDepuisIdentifiant(email);
+          if (!mail) throw new Error("invalid login");
+          const { error } = await sb.auth.signInWithPassword({ email: mail, password: mdp });
           if (error) throw error;
         }
       } catch (err) {
@@ -272,9 +269,11 @@ function ecranAuth(modeInitial = "connexion") {
 
 async function motDePasseOublie(form) {
   const email = form.querySelector("#email").value.trim();
-  if (!email.includes("@")) return afficherMessage("Pour réinitialiser ton mot de passe, contacte Alexandre GERBER.", "erreur");
+  if (email.length < 3) return afficherMessage("Entre d'abord ton nom et prénom ci-dessus.", "erreur");
   try {
-    const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+    const mail = await emailDepuisIdentifiant(email);
+    if (!mail) { afficherMessage("Si ce compte existe, un email de réinitialisation vient d'être envoyé.", "succes"); return; }
+    const { error } = await sb.auth.resetPasswordForEmail(mail, { redirectTo: location.origin + location.pathname });
     if (error) throw error;
     afficherMessage("Si ce compte existe, un email de réinitialisation vient d'être envoyé.", "succes");
   } catch (err) { afficherMessage(messageErreur(err), "erreur"); }
