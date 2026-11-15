@@ -364,7 +364,7 @@ function ecranAccueil(profil) {
   const estStaff = profil.role === "staff";
 
   const carteBienvenue = el("section", { class: "carte" }, [
-    el("h1", { text: "Bonjour " + (profil.nom ? profil.nom.split(" ")[0] : "") }),
+    el("h1", { text: "Bonjour " + (profil.nom || "") }),
     el("span", { class: "badge" + (estStaff ? " badge-staff" : ""), text: estStaff ? "Staff" : "Joueur" }),
     el("p", { class: "petit", text: estStaff
       ? " Ouvre le tableau de bord pour suivre l'équipe. Tu peux aussi saisir tes propres données."
