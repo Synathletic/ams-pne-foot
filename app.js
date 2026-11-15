@@ -45,7 +45,7 @@ function messageErreur(err) {
   const m = (err && err.message ? err.message : "").toLowerCase();
   if (!navigator.onLine || m.includes("failed to fetch") || m.includes("network"))
     return "Pas de connexion internet. Réessaie dès que le réseau revient.";
-  if (m.includes("invalid login")) return "Email ou mot de passe incorrect.";
+  if (m.includes("invalid login")) return "Identifiant ou mot de passe incorrect.";
   if (m.includes("email not confirmed")) return "Confirme d'abord ton email (regarde ta boîte de réception et les spams).";
   if (m.includes("already registered")) return "Un compte existe déjà avec cet email. Utilise l'onglet Connexion.";
   if (m.includes("password")) return "Mot de passe trop court : 8 caractères minimum.";
@@ -63,6 +63,14 @@ function groupeInvitation() {
 }
 groupeInvitation();
 
+const DOMAINE_ID = "foot.synathletic.com";
+function idVersEmail(v, inverse) {
+  v = String(v || "").trim();
+  if (v.includes("@")) return v.toLowerCase();
+  let m = v.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+  if (inverse) m = m.reverse();
+  return m.length ? m.join(".") + "@" + DOMAINE_ID : "";
+}
 function emailValide(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }
 
 /* ---------- Saisie hors connexion : file d'attente locale ---------- */
@@ -204,18 +212,16 @@ function ecranAuth(modeInitial = "connexion") {
   const formZone = el("div");
 
   function dessiner() {
-    onglets.replaceChildren(
-      el("button", { type: "button", role: "tab", "aria-selected": String(mode === "connexion"), text: "Connexion", onclick: () => { mode = "connexion"; dessiner(); } }),
-      el("button", { type: "button", role: "tab", "aria-selected": String(mode === "inscription"), text: "Créer mon compte", onclick: () => { mode = "inscription"; dessiner(); } })
-    );
+    mode = "connexion";
+    onglets.replaceChildren();
     const form = el("form", { novalidate: "" });
     if (mode === "inscription") {
       form.append(el("label", { for: "nom", text: "Nom et prénom" }),
         el("input", { id: "nom", type: "text", autocomplete: "name", maxlength: "80", required: "" }));
     }
     form.append(
-      el("label", { for: "email", text: "Email" }),
-      el("input", { id: "email", type: "email", autocomplete: "email", inputmode: "email", required: "" }),
+      el("label", { for: "email", text: "Identifiant (nom prénom)" }),
+      el("input", { id: "email", type: "text", autocomplete: "username", autocapitalize: "words", required: "" }),
       el("label", { for: "mdp", text: "Mot de passe" + (mode === "inscription" ? " (8 caractères minimum)" : "") }),
       el("input", { id: "mdp", type: "password", autocomplete: mode === "inscription" ? "new-password" : "current-password", minlength: "8", required: "" }),
       el("button", { class: "btn", type: "submit", text: mode === "inscription" ? "Créer mon compte" : "Me connecter" })
@@ -228,7 +234,7 @@ function ecranAuth(modeInitial = "connexion") {
       const email = form.querySelector("#email").value.trim();
       const mdp = form.querySelector("#mdp").value;
       const nom = mode === "inscription" ? form.querySelector("#nom").value.trim() : "";
-      if (!emailValide(email)) return afficherMessage("Entre une adresse email valide.", "erreur");
+      if (!idVersEmail(email)) return afficherMessage("Entre ton nom et prénom.", "erreur");
       if (mdp.length < 8) return afficherMessage("Le mot de passe doit contenir au moins 8 caractères.", "erreur");
       if (mode === "inscription" && nom.length < 2) return afficherMessage("Entre ton nom et prénom.", "erreur");
       const bouton = form.querySelector(".btn[type=submit]");
@@ -242,7 +248,11 @@ function ecranAuth(modeInitial = "connexion") {
             mode = "connexion"; dessiner();
           }
         } else {
-          const { error } = await sb.auth.signInWithPassword({ email, password: mdp });
+          let { error } = await sb.auth.signInWithPassword({ email: idVersEmail(email), password: mdp });
+          if (error && !email.includes("@") && email.trim().split(/\s+/).length === 2) {
+            const r2 = await sb.auth.signInWithPassword({ email: idVersEmail(email, true), password: mdp });
+            if (!r2.error) error = null;
+          }
           if (error) throw error;
         }
       } catch (err) {
@@ -262,7 +272,7 @@ function ecranAuth(modeInitial = "connexion") {
 
 async function motDePasseOublie(form) {
   const email = form.querySelector("#email").value.trim();
-  if (!emailValide(email)) return afficherMessage("Entre d'abord ton email ci-dessus.", "erreur");
+  if (!email.includes("@")) return afficherMessage("Pour réinitialiser ton mot de passe, contacte Alexandre GERBER.", "erreur");
   try {
     const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
     if (error) throw error;
