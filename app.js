@@ -311,8 +311,10 @@ function ecranConsentement(profil) {
     el("p", { text: "Lis cet avertissement : il explique quelles données sont collectées et qui les voit." }),
     blocAvertissement(),
     el("label", { for: "nomprofil", text: "Nom et prénom" }), champNom,
-    el("label", { for: "groupe", text: "Groupe" }), selGroupe,
-    el("label", { for: "poste", text: "Poste principal" }), selPoste,
+    ...(profil.role === "staff" ? [] : [
+      el("label", { for: "groupe", text: "Groupe" }), selGroupe,
+      el("label", { for: "poste", text: "Poste principal" }), selPoste
+    ]),
     el("label", { for: "sexe", text: "Sexe (sert uniquement à afficher la question sur le cycle)" }), selSexe,
     el("div", { class: "ligne-case" }, [caseOk, el("label", { for: "ok", text: "J'ai lu et j'accepte : mes données de bien-être, de séances et de tests sont enregistrées et consultables par le staff technique et médical du programme, qui peut aussi saisir pour moi des résultats de tests. Mon cycle menstruel n'est visible du staff que si j'active moi-même le partage. Cet outil ne remplace pas un avis médical." })]),
     bouton
@@ -322,15 +324,16 @@ function ecranConsentement(profil) {
     if (!caseOk.checked) return;
     const nom = champNom.value.trim();
     if (nom.length < 2) return afficherMessage("Entre ton nom et prénom.", "erreur");
-    if (!selGroupe.value) return afficherMessage("Choisis ton groupe (Programme National Élite ou Sélection U23).", "erreur");
-    if (!selPoste.value) return afficherMessage("Choisis ton poste.", "erreur");
+    const estStaffForm = profil.role === "staff";
+    if (!estStaffForm && !selGroupe.value) return afficherMessage("Choisis ton groupe (Programme National Élite ou Sélection U23).", "erreur");
+    if (!estStaffForm && !selPoste.value) return afficherMessage("Choisis ton poste.", "erreur");
     bouton.disabled = true;
     try {
       const { error } = await sb.from("profiles").update({
         nom,
         sport_principal: "football",
-        groupe: selGroupe.value,
-        poste: selPoste.value,
+        groupe: estStaffForm ? null : selGroupe.value,
+        poste: estStaffForm ? null : selPoste.value,
         sexe: selSexe.value || null,
         consentement_at: new Date().toISOString(),
         consentement_version: cfg.VERSION_CONSENTEMENT
