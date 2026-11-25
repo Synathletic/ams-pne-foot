@@ -1,10 +1,10 @@
 // Service worker AMS U23 & PNE Football : met en cache l'interface (pas les données de santé).
 // Les appels à Supabase ne sont JAMAIS mis en cache.
 // Changer le numéro de version ci-dessous à chaque mise à jour de l'application.
-const VERSION = "ams-foot-v1-7";
+const VERSION = "ams-foot-v1-8";
 const FICHIERS = [
   "./", "index.html", "style.css", "config.js", "suivi.js", "tests.js", "equipe.js", "app.js",
-  "logo.svg", "drapeau.svg", "icon-192.png", "logo-connexion.png", "manifest.json"
+  "logo.svg", "logo-entete.png", "drapeau.svg", "icon-192.png", "logo-connexion.png", "manifest.json"
 ];
 
 self.addEventListener("install", (e) => {
