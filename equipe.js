@@ -26,7 +26,7 @@ function ecranAjoutAthlete(profilStaff) {
       el("label", { class: "ligne-case", for: "aj-consent" }, [consent, el("span", { text: "J'ai recueilli le consentement de ce joueur (ou de son représentant légal s'il est mineur) pour le suivi de ses données de forme et d'entraînement." })]),
       bouton
     ]),
-    el("p", { class: "signature", text: "Concepteur : Alexandre GERBER" })
+    signature()
   );
   (async () => {   // suggestions de groupes existants
     try {
@@ -72,7 +72,7 @@ function ecranSaisieEquipe(profilStaff) {
       el("label", { for: "eq-groupe", text: "Groupe" }), selGroupe
     ]),
     zone, bouton, el("div", { style: "height:10px" }), ajout,
-    el("p", { class: "signature", text: "Concepteur : Alexandre GERBER" })
+    signature()
   );
 
   let cartes = [];

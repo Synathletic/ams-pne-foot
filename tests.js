@@ -284,7 +284,7 @@ function ecranTests(profil) {
     ]),
     recents,
     el("div", { class: "avertissement", text: "Ces tests ne remplacent pas un avis médical. Malaise, palpitations ou douleur à la poitrine : arrête et consulte un professionnel de santé." }),
-    el("p", { class: "signature", text: "Concepteur : Alexandre GERBER" })
+    signature()
   );
   (async () => {
     try {
@@ -306,7 +306,7 @@ function ecranChoixAthleteTest(profilStaff) {
     enTete("Saisir un test pour un joueur", demarrer),
     el("p", { class: "petit", text: "Choisis le joueur testé. Seuls les joueurs ayant donné leur consentement apparaissent comme sélectionnables. Il faut une connexion internet." }),
     zone,
-    el("p", { class: "signature", text: "Concepteur : Alexandre GERBER" })
+    signature()
   );
   (async () => {
     try {
@@ -610,7 +610,7 @@ function ecranSciences(retour) {
       ].map((x) => el("li", { text: x }))),
       el("p", { class: "petit", text: "Références citées de mémoire par l'assistant : vérifie les détails avant toute publication. Les « repères indicatifs » sont des ordres de grandeur, pas des normes officielles." })
     ]),
-    el("p", { class: "signature", text: "Concepteur : Alexandre GERBER" })
+    signature()
   );
   window.scrollTo(0, 0);
 }

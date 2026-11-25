@@ -63,7 +63,11 @@ function groupeInvitation() {
 }
 groupeInvitation();
 
-async function emailDepuisIdentifiant(v) {
+async function signature() {
+  return el("div", { class: "signature" }, [el("div", { text: "Concepteurs :" }), el("div", { text: "Alexandre GERBER" }), el("div", { text: "Vincent RAUTUREAU" }),
+    el("div", { class: "made", text: "Made in Bénin : un outil de suivi de l'état physique des joueurs 🇧🇯⚽ Guépards et Amazones." })]);
+}
+function emailDepuisIdentifiant(v) {
   v = String(v || "").trim();
   if (v.includes("@")) return v.toLowerCase();
   if (v.length < 3) return "";
@@ -260,10 +264,11 @@ function ecranAuth(modeInitial = "connexion") {
     formZone.replaceChildren(form);
   }
 
-  carte.append(el("h1", { text: "Bienvenue" }),
+  carte.append(el("img", { src: "logo-connexion.png", alt: "Logo Athlete Monitoring System : guépard et ballon", class: "logo-connexion" }),
+    el("h1", { text: "Bienvenue" }),
     el("p", { class: "petit", text: "Suivi de forme et de charge d'entraînement des joueurs du Programme National Élite et de la Sélection nationale U23 de football." }),
     onglets, formZone);
-  racine.append(carte, el("p", { class: "signature", text: "Concepteur : Alexandre GERBER" }));
+  racine.append(carte, signature());
   dessiner();
 }
 
@@ -355,7 +360,7 @@ function ecranConsentement(profil) {
       bouton.disabled = false;
     }
   });
-  racine.append(form, el("p", { class: "signature", text: "Concepteur : Alexandre GERBER" }));
+  racine.append(form, signature());
 }
 
 /* ---------- Écran : accueil ---------- */
@@ -449,7 +454,7 @@ function ecranAccueil(profil) {
 
   racine.append(carteBienvenue, zoneAttente(profil), zoneAlertes, tuiles, zoneHisto, reglages,
     el("div", { class: "avertissement", text: "Cet outil sert au suivi de l'entraînement. Il ne remplace pas un avis médical : en cas de douleur ou de symptôme inquiétant, consulte un professionnel de santé." }),
-    el("p", { class: "signature", text: "Concepteur : Alexandre GERBER" }));
+    signature());
 }
 
 /* ---------- Saisie : outils communs ---------- */
