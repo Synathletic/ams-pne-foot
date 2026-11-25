@@ -63,11 +63,11 @@ function groupeInvitation() {
 }
 groupeInvitation();
 
-async function signature() {
+function signature() {
   return el("div", { class: "signature" }, [el("div", { text: "Concepteurs :" }), el("div", { text: "Alexandre GERBER" }), el("div", { text: "Vincent RAUTUREAU" }),
     el("div", { class: "made", text: "Made in Bénin : un outil de suivi de l'état physique des joueurs 🇧🇯⚽ Guépards et Amazones." })]);
 }
-function emailDepuisIdentifiant(v) {
+async function emailDepuisIdentifiant(v) {
   v = String(v || "").trim();
   if (v.includes("@")) return v.toLowerCase();
   if (v.length < 3) return "";
