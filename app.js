@@ -64,7 +64,7 @@ function groupeInvitation() {
 groupeInvitation();
 
 function signature() {
-  return el("div", { class: "signature" }, [el("div", { text: "Concepteurs :" }), el("div", { text: "Alexandre GERBER" }), el("div", { text: "Vincent RAUTUREAU" }),
+  return el("div", { class: "signature" }, [el("div", { text: "Concepteur :" }), el("div", { text: "Alexandre GERBER" }),
     el("div", { class: "made", text: "Made in Bénin : un outil de suivi de l'état physique des joueurs 🇧🇯⚽ Guépards et Amazones." })]);
 }
 async function emailDepuisIdentifiant(v) {
@@ -363,6 +363,34 @@ function ecranConsentement(profil) {
   racine.append(form, signature());
 }
 
+/* ---------- Écran : pourquoi cette application ---------- */
+function ecranPourquoi(retour) {
+  racine.replaceChildren();
+  const p = (t) => el("p", { text: t });
+  const h = (t) => el("h2", { text: t });
+  const ul = (items) => el("ul", {}, items.map((t) => el("li", { text: t })));
+  racine.append(Object.assign(enTete("Pourquoi cette application ?", retour), { className: "barre-titre centre" }), el("section", { class: "carte pourquoi" }, [
+    el("div", { class: "guepard" }, [el("img", { src: "logo-connexion.png", class: "guepard-logo", alt: "Logo Athlete Monitoring System : guépard et ballon" })]),
+    el("h1", { text: "Bienvenue sur ton Athlete Monitoring System" }),
+    el("p", { class: "accroche", text: "Prends soin de ton corps : c'est ton premier outil de performance." }),
+    p("Tu fais partie du Programme National Élite ou de la Sélection nationale U23. Cette application est faite pour toi : elle t'aide à suivre ta forme, ta fatigue et ta récupération, jour après jour."),
+    h("Pourquoi cette application ?"),
+    p("Un joueur progresse quand il s'entraîne bien, mais aussi quand il récupère bien. En notant comment tu te sens et ce que tu as fait à l'entraînement, tu permets au staff d'ajuster la charge au bon moment. Tu limites ainsi les risques de surcharge et de blessure."),
+    h("Comment ça marche ?"),
+    ul(["Chaque matin, tu réponds en une minute à quelques questions : sommeil, fatigue, douleurs, humeur.", "Après chaque séance ou match, tu indiques l'intensité ressentie (RPE) et la durée.", "Quand le staff te le demande, tu saisis tes tests de forme (CMJ, sprint 30 m, HRV).", "Dans « Mon suivi », tu vois l'évolution de ta charge et de ta forme sur des graphiques, avec des alertes si quelque chose mérite ton attention."]),
+    h("Ce que ça t'apporte"),
+    ul(["Mieux comprendre ton corps et repérer tes signaux de fatigue.", "Suivre ta progression semaine après semaine.", "Avoir des séances et un temps de jeu mieux adaptés à ton état du moment."]),
+    h("Ce que l'application ne fait pas"),
+    p("Elle ne pose pas de diagnostic et ne remplace pas le médecin ni le staff. Une alerte est un repère pour en parler, pas une décision. Si tu as mal ou une gêne, préviens le médecin de l'équipe sans attendre."),
+    h("Tes données"),
+    p("Tes informations sont personnelles. Toi, tu vois les tiennes, et le staff autorisé du programme peut consulter celles de l'équipe. Elles servent uniquement à ton suivi sportif et médical."),
+    h("Un conseil"),
+    p("Réponds toujours honnêtement, même quand ce n'est pas un bon jour. Une réponse sincère t'aide plus qu'une « bonne » réponse."),
+    el("p", { class: "accroche", text: "Alexandre GERBER, concepteur de l'application de suivi" })
+  ]), signature());
+  window.scrollTo(0, 0);
+}
+
 /* ---------- Écran : accueil ---------- */
 function ecranAccueil(profil) {
   racine.replaceChildren();
@@ -452,7 +480,11 @@ function ecranAccueil(profil) {
     btnRetrait
   );
 
-  racine.append(carteBienvenue, zoneAttente(profil), zoneAlertes, tuiles, zoneHisto, reglages,
+  const cartePourquoi = el("section", { class: "carte" }, [
+    el("h2", { text: "Pourquoi cette application ?" }),
+    el("div", { class: "grille" }, [tuile("Pourquoi ?", "le sens de l'application", () => ecranPourquoi(() => ecranAccueil(profil)))])
+  ]);
+  racine.append(carteBienvenue, cartePourquoi, zoneAttente(profil), zoneAlertes, tuiles, zoneHisto, reglages,
     el("div", { class: "avertissement", text: "Cet outil sert au suivi de l'entraînement. Il ne remplace pas un avis médical : en cas de douleur ou de symptôme inquiétant, consulte un professionnel de santé." }),
     signature());
 }

@@ -144,3 +144,10 @@ details p { font-size: .92rem; }
 
 .signature .made{margin-top:8px;font-weight:700;color:var(--vert)}
 .logo-connexion{display:block;margin:0 auto 10px;width:min(62%,220px);height:auto}
+
+.guepard{max-width:220px;margin:0 auto 8px}
+.guepard-logo{width:100%;height:auto;display:block}
+.accroche{font-weight:800;color:var(--bleu);text-align:center}
+.pourquoi h2{margin-top:18px}
+.pourquoi ul{padding-left:20px}
+.pourquoi h1{text-align:center;font-size:1.25rem}
